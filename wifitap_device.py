@@ -34,6 +34,14 @@ class WifiTapDevice:
         self.debug = False
         self.verb = False
 
+        # Radiotap parameters for injection
+        self.rate = None        # Legacy Rate
+        self.power = None       # Tx Power
+        self.tx_flags = None    # Tx Flags
+        self.retries = None     # Data Retries
+        self.mcs = None         # N Rate (MCS index)
+        self.hgi = False        # HT Guard Interval 
+
     def open(self, name_format=''):
         if name_format == '':
             name_format = 'wj%d'
@@ -88,3 +96,5 @@ class WifiTapDevice:
             self.key_id = key_id
 
         self.has_wep = True
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 autoindent

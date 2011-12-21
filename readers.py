@@ -28,6 +28,44 @@ class WifiTapReader(asyncore.file_dispatcher):
         self.fd = wifitap.fileno()
         asyncore.file_dispatcher.__init__(self, self.fd, map)
 
+    def radiotap(self):
+        present = ''
+        data = ''
+
+        if self._tap.rate is not None:
+            if present == '':
+                present = 'Rate'
+            else:
+                present += '+Rate'
+            data += struct.pack('<B',((self._tap.rate)*10)/5)
+
+        if self._tap.power is not None:
+            if present == '':
+                present = 'dBm_TX_Power'
+            else:
+                present += '+dBm_TX_Power'
+            data += struct.pack('<b',self._tap.power)
+
+        if self._tap.tx_flags is not None:
+            pass
+
+        if self._tap.retries is not None:
+            if present == '':
+                present = 'b17'
+            else:
+                present += '+b17'
+            data += struct.pack('<B',self._tap.retries)
+
+        if self._tap.mcs is not None:
+            pass
+
+        if present == '':
+            rt = RadioTap()
+        else:
+            rt = RadioTap(present=present, notdecoded=data)
+
+        return rt
+
     def writable(self):
         return False
 
@@ -43,7 +81,9 @@ class WifiTapReader(asyncore.file_dispatcher):
         #        os.write(1,"%s\n" % eth_rcvd_frame.summary())
 
         # Prepare Dot11 frame for injection
-        dot11_sent_frame = RadioTap()/Dot11(
+        dot11_sent_frame = self.radiotap()
+
+        dot11_sent_frame /= Dot11(
             type = "Data",
             FCfield = "from-DS",
             addr1 = eth_rcvd_frame.getlayer(Ether).dst,

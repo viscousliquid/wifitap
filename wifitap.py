@@ -40,13 +40,17 @@ def usage(status=0):
     print "     -s <SMAC>     specify source MAC address for injected frames"
     print "     -w <key>      WEP mode and key"
     print "     -k <key id>   WEP key id (default: 0)"
+    print "     -r <b/g rate> B/G transmit rate"
+    print "     -m <mcs rate> N transmit rate"
+    print "     -t <retries>  Number of retries"
+    print "     -g            Enable short guard interval"
     print "     -d            activate debug"
     print "     -v            verbose debugging"
     print "     -h            this so helpful output"
     sys.exit(status)
 
 def parse_opts(wifitap):
-    opts = getopt.getopt(sys.argv[1:],"b:o:i:s:w:k:dvh")
+    opts = getopt.getopt(sys.argv[1:],"b:o:i:s:w:k:r:m:t:gdvh")
 
     for opt,optarg in opts[0]:
         if opt == "-b":
@@ -61,6 +65,14 @@ def parse_opts(wifitap):
             wifitap.wepkey = optarg
         elif opt == "-k":
             wifitap.keyid = int(optarg)
+        elif opt == "-r":
+            wifitap.rate = int(optarg)
+        elif opt == "-m":
+            wifitap.mcs = int(optarg)
+        elif opt == "-t":
+            wifitap.retries = int(optarg)
+        elif opt == "-g":
+            wifitap.hgi = True
         elif opt == "-d":
             wifitap.debug = True
         elif opt == "-v":
